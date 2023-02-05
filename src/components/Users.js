@@ -1,135 +1,79 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 const API = process.env.REACT_APP_API;
 
 export const Users = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [v1, setV1] = useState(0);
+  const [v2, setV2] = useState(0);
+  const [v3, setV3] = useState(0);
+  const [v4, setV4] = useState(0);
 
   const [editing, setEditing] = useState(false);
-  const [id, setId] = useState("");
 
-  const nameInput = useRef(null);
+  async function handleOnSubmit(e){
+    e.preventDefault()
 
-  let [users, setUsers] = useState([]);
+    const data = await fetch(`${API}/data`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        v1,
+        v2,
+        v3,
+        v4
+      })
+    })
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!editing) {
-      const res = await fetch(`${API}/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-      await res.json();
-    } else {
-      const res = await fetch(`${API}/users/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-      const data = await res.json();
-      console.log(data);
-      setEditing(false);
-      setId("");
-    }
-    await getUsers();
+    const dataJson = await data.json()
 
-    setName("");
-    setEmail("");
-    setPassword("");
-    nameInput.current.focus();
-  };
-
-  const getUsers = async () => {
-    const res = await fetch(`${API}/users`);
-    const data = await res.json();
-    setUsers(data);
-  };
-
-  const deleteUser = async (id) => {
-    const userResponse = window.confirm("Are you sure you want to delete it?");
-    if (userResponse) {
-      const res = await fetch(`${API}/users/${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      console.log(data);
-      await getUsers();
-    }
-  };
-
-  const editUser = async (id) => {
-    const res = await fetch(`${API}/users/${id}`);
-    const data = await res.json();
-
-    setEditing(true);
-    setId(id);
-
-    // Reset
-    setName(data.name);
-    setEmail(data.email);
-    setPassword(data.password);
-    nameInput.current.focus();
-  };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
+    console.log({ dataJson })
+  }
 
   return (
     <div className="row">
       <div className="col-md-4">
-        <form onSubmit={handleSubmit} className="card card-body">
+        <form className="card card-body" onSubmit={handleOnSubmit} >
           <div className="form-group">
             <input
-              type="text"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              type="number"
+              onChange={(e) => setV1(e.target.value)}
+              value={v1}
               className="form-control"
               placeholder="V1"
-              ref={nameInput}
               autoFocus
+              required
             />
           </div>
           <div className="form-group">
             <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              type="number"
+              onChange={(e) => setV2(e.target.value)}
+              value={v2}
               className="form-control"
               placeholder="V2"
+              required
             />
           </div>
           <div className="form-group">
             <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              type="number"
+              onChange={(e) => setV3(e.target.value)}
+              value={v3}
               className="form-control"
               placeholder="V3"
+              required
             />
           </div>
           <div className="form-group">
             <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              type="number"
+              onChange={(e) => setV4(e.target.value)}
+              value={v4}
               className="form-control"
               placeholder="V4"
+              required
             />
           </div>
          
@@ -149,7 +93,7 @@ export const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {/* {users.map((user) => (
               <tr key={user._id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
@@ -169,7 +113,7 @@ export const Users = () => {
                   </button>
                 </td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       </div>
